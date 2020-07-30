@@ -1,9 +1,0 @@
-1:adding file, import modules, adding top level assignements
-2:new function 'main'
-3:first version, importing libs, adding main procedure
-4:first version, required modules, adding top level assignements
-5:adding Supervisor class
-6:add 'start'
-7:add 'get_connectors' function
-8:define function get_status
-9:add 'send_state_metrics' function
