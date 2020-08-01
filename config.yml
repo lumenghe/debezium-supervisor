@@ -1,0 +1,29 @@
+kafka:
+  extra_params:
+    security.protocol: ssl
+    ssl.certificate.location: kafka-cert.pem
+    ssl.ca.location: kafka-ca.pem
+    ssl.key.location: kafka-cert.key
+
+cdc: "broker_server_name"
+  
+log:
+  version: 1
+  formatters:
+    simple:
+      format: 'debezium_supervisor: %(asctime)s [%(name)s] %(levelname)s: %(message)s'
+    json:
+      service_name: debezium_supervisor
+      index_name: supervisor
+  handlers:
+    console:
+      class: logging.StreamHandler
+      formatter: json
+      stream: ext://sys.stdout
+    syslog:
+      class: logging.handlers.SysLogHandler
+      formatter: simple
+      address: '/var/run/syslog'
+      facility: local3
+  disable_existing_loggers: False
+
