@@ -18,3 +18,20 @@ class Supervisor:
             self._kafka_config["extra_params"]["ssl.certificate.location"],
             self._kafka_config["extra_params"]["ssl.key.location"],
         )
+
+    def start(self):
+        while True:
+            try:
+                time.sleep(0.5)
+                connectors = self.get_connectors()
+                response = self.get_status(max(connectors))
+                self.send_state_metrics(response)
+                self._logger.info("api_status: ok")
+            except requests.exceptions.ConnectionError:
+                self._logger.warning("api_status: cannot reach host")
+            except requests.exceptions.ReadTimeout:
+                self._logger.warning("api_status: read timeout")
+            except requests.exceptions.Timeout:
+                self._logger.warning("api_status: request timeout")
+            except ValueError:
+                self._logger.warning("api_status: no_connector")
