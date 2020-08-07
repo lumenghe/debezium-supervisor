@@ -35,3 +35,16 @@ class Supervisor:
                 self._logger.warning("api_status: request timeout")
             except ValueError:
                 self._logger.warning("api_status: no_connector")
+
+    def get_connectors(self):
+        connectors = requests.get(
+            url=self._url,
+            auth=HTTPBasicAuth(
+                os.getenv("LDAP_USERNAME"), os.getenv("LDAP_PASSWORD")
+            ),
+            verify=self._verify,
+            cert=self._cert,
+            timeout=1,
+        ).json()
+
+        return connectors
