@@ -48,3 +48,16 @@ class Supervisor:
         ).json()
 
         return connectors
+
+    def get_status(self, connector):
+        # get current connector status
+        response = requests.get(
+            url=f"""{self._url}/{connector}/status""",
+            auth=HTTPBasicAuth(
+                os.getenv("LDAP_USERNAME"), os.getenv("LDAP_PASSWORD")
+            ),
+            verify=self._verify,
+            cert=self._cert,
+            timeout=1,
+        )
+        return response.json()
