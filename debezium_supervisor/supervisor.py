@@ -61,3 +61,23 @@ class Supervisor:
             timeout=1,
         )
         return response.json()
+
+    def send_state_metrics(self, response):
+        tasks = response.get("tasks", [])
+        if not tasks:
+            self._logger.warning(
+                f"""connector:{response.get("name", "")} no task"""
+            )
+        else:
+            connector_state = response["connector"]["state"] == "RUNNING"
+            task_state = response["tasks"][0]["state"] == "RUNNING"
+            if connector_state and task_state:
+                reason = "running"
+                self._logger.info(
+                    f"""connector:{response["name"]}, connector_state={response["connector"]["state"]}, task_state={response["tasks"][0]["state"]} {response["tasks"][0].get("trace", "")}"""
+                )
+            else:
+                reason = f"""conn_{response["connector"]["state"]}_task_{response["tasks"][0]["state"]}"""
+                self._logger.warning(
+                    f"""connector:{response["name"]}, connector_state={response["connector"]["state"]}, task_state={response["tasks"][0]["state"]} {response["tasks"][0].get("trace", "")}"""
+                )
