@@ -1,0 +1,62 @@
+version: '3'
+services:
+  app: &app
+    build: .
+    networks:
+      - ns
+
+  format-imports:
+    <<: *app
+    command: isort -rc debezium_supervisor/.
+    networks:
+      - ns
+    volumes:
+      - ./:/usr/src/app
+
+  check-format-imports:
+    <<: *app
+    command: isort --check-only -rc debezium_supervisor/.
+    depends_on: []
+
+  format:
+    <<: *app
+    command: black -l 79 --py36 debezium_supervisor
+    networks:
+      - ns
+    volumes:
+      - .:/usr/src/app
+
+  check-format:
+    <<: *app
+    command: black -l 79 --py36 --check debezium_supervisor
+    depends_on: []
+
+  style:
+    <<: *app
+    command: pylint --reports=n debezium_supervisor
+    depends_on: []
+
+  complexity:
+    <<: *app
+    command: xenon --ignore "tests" --max-absolute C --max-modules B --max-average A .
+    depends_on: []
+
+  build-package:
+    <<: *app
+    command: python setup.py sdist
+    depends_on: []
+    volumes:
+      - ./:/usr/src/app
+
+  build-clean:
+    <<: *app
+    command: rm *egg* dist/ -rfv
+    depends_on: []
+    volumes:
+      - ./:/usr/src/app
+
+  security-sast:
+    <<: *app
+    command: bandit -r debezium_supervisor
+    depends_on: []
+
